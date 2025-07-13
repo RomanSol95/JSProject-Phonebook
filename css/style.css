@@ -12,9 +12,7 @@ html, body {
   flex-direction: column;
 }
 
-main {
-  flex: 1;
-}
+
 
 header {
   background-color: #333;
@@ -60,7 +58,9 @@ nav ul li a {
   text-decoration: none;
   font-size: 0.9rem;
 }
-
+main {
+  flex: 1;
+}
 .main-container {
   flex: 1;
   display: flex;
