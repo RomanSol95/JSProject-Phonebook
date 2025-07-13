@@ -345,3 +345,19 @@ footer {
 .popup .btn.red { background-color: #e74c3c; color: white; }
 .popup .btn.gray { background-color: #0000007d; color: rgb(210, 210, 210); }
 
+.contact-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contact-page .contacts {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 500px;
+}
