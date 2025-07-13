@@ -71,7 +71,7 @@ main {
 }
 
 .contacts {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0);
   padding: 1rem 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -88,14 +88,14 @@ main {
   margin: 0.5rem 0;
   padding: 0.3rem 0.7rem;
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.487);
   font-weight: bold;
   transition: background-color 0.3s;
   cursor: pointer;
 }
 
 .contacts li:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.495);
 }
 
 .actions {
