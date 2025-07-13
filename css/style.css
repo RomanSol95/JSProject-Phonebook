@@ -1,0 +1,347 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-image: url("../images/students-talking.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav .logo {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+}
+
+nav .logo h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+nav .logo small {
+  font-size: 0.7rem;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  margin-right: 1rem;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.contacts {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  text-align: center;
+  flex: 1;
+}
+
+.contacts ul {
+  list-style: none;
+  padding: 0;
+}
+
+.contacts li {
+  margin: 0.5rem 0;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  font-weight: bold;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.contacts li:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.actions button {
+  padding: 0.7rem 1.2rem;
+  background-color: white;
+  color: #0077cc;
+  border: 2px solid #003f66;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.actions button:hover {
+  background-color: #0077cca1;
+  color: rgb(0, 0, 0);
+}
+
+footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 0.3rem;
+  font-size: 0.75rem;
+}
+
+/* Popup styles */
+.popup-overlay,
+.popup {
+  color: rgba(255, 255, 255, 0.919);
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color:#0000007a;;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-content,
+.popup form {
+  
+  background-color: #0000007a;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+.popup-content form,
+.popup form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.popup-content input,
+.popup-content textarea,
+.popup-content button,
+.popup input,
+.popup textarea,
+.popup button {
+  color: rgb(0, 0, 0);
+  text-align: center;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.popup-content button,
+.popup button {
+  background-color: #1a1a1aaf;
+  color: white;
+  cursor: pointer;
+}
+
+.popup-content button:hover,
+.popup button:hover {
+  background-color: #5d5d5dd2;
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #ffffff;
+}
+/* Contact Us form style override */
+#contactUsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+#contactUsForm input,
+#contactUsForm textarea,
+#contactUsForm button {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+/* Contact Us form style override */
+#contactUsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+#contactUsForm input,
+#contactUsForm textarea,
+#contactUsForm button {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.actions-button {
+  padding: 0.7rem 1.2rem;
+  background-color: white;
+  color: #0077cc;
+  border: 2px solid #003f66;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.actions-button:hover {
+  background-color: #0077cc;
+  color: rgb(0, 0, 0);
+}
+.heading-button {
+  padding: 0.7rem 1.2rem;
+  background-color: white;
+  color: #0077cc;
+  border: 2px solid #003f66;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  width: fit-content;
+  margin: auto;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: normal;
+  cursor: default;
+  transition: none;
+}
+.contact-list-wrapper {
+  position: relative;
+  max-height: 270px;
+  overflow-y: auto;
+  margin: auto;
+  width: 60%;
+  border: 2px solid #545454;
+  border-radius: 10px;
+  background-color: transparent;
+  backdrop-filter: blur(3px);
+  box-shadow: 0 0 10px rgba(11, 11, 11, 0.1);
+  padding: 10px;
+}
+
+#successMessageText {
+  font-size: 1.1rem;
+  color: green;
+  text-align: center;
+  margin: 0;
+}
+/* פופאפ שחור */
+.dark-popup .popup-content {
+  
+  background-color: #0000007a;
+  color: white;
+  border: 1px solid #555;
+}
+
+/* הטקסט בפופאפ */
+#contactInfoText {
+  color:#fff;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: center;
+  white-space: pre-line;
+}
+#confirmPopup .popup-content {
+  background: #0000007a;
+  color: white;
+  text-align: center;
+  border-color: #333;
+}
+
+#confirmPopup button {
+  background: #0000007a;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+#confirmPopup button:hover {
+  background: #666;
+}
+.popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-content {
+  background-color: #0000007a;
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+  min-width: 260px;
+  font-size: 1rem;
+}
+
+.popup .btn {
+  margin: 0 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.popup .btn.red { background-color: #e74c3c; color: white; }
+.popup .btn.gray { background-color: #0000007d; color: rgb(210, 210, 210); }
+

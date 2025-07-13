@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phonebook Project</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .search-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .search-input {
+      padding: 0.7rem 1.2rem;
+      background-color: white;
+      color: #0077cc;
+      border: 2px solid #003f66;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <h1>Phonebook V1.0</h1>
+        <small>by Roman Soloveychyk & Mor Bilaiev</small>
+      </div>
+      <ul>
+        
+        <li><a href="index.html">Home</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div id="phonebookClosed" class="contacts" style="text-align: center;">
+    <button id="openPhonebookBtn" class="actions-button">Open Phonebook</button>
+  </div>
+
+  
+  <div id="phonebookList" class="contacts" style="display: none;">
+    <div class="actions-row" style="margin-bottom: 1rem;">
+      <button id="addContactBtn" class="actions-button">Create New Profile</button>
+      <button id="deleteAllBtn" class="actions-button">Delete All Profiles</button>
+      <button id="toggleFavoritesBtn" class="actions-button">Show Only Favorites</button>
+      <button id="closePhonebookBtn" class="actions-button">Close Phonebook</button>
+
+    </div>
+
+    <div class="search-wrapper">
+      <input type="text" id="searchInput" placeholder="Search contacts..." class="search-input" />
+    </div>
+<div class="contact-list-wrapper">
+  <ul id="contact-list"></ul>
+  <div class="fade-bottom"></div>
+</div>
+
+
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Roman Soloveychyk</p>
+  </footer>
+
+  <!-- Add Contact Popup -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-content">
+      <span class="close-btn" id="closePopup">&times;</span>
+      <h3>Add New Contact</h3>
+      <form id="contactForm">
+        <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="phone" placeholder="Phone" required />
+        <input type="email" id="email" placeholder="Email" />
+        <input type="text" id="address" placeholder="Address" />
+        <textarea id="notes" placeholder="Notes"></textarea>
+        <button type="submit">Add</button>
+      </form>
+      <p id="error" class="error-message"></p>
+    </div>
+  </div>
+
+  <!-- Edit Contact Popup -->
+  <div id="editPopup" class="popup">
+    <form id="editContactForm">
+      <h2>Edit Contact</h2>
+      <input type="text" id="editName" placeholder="Name" required />
+      <input type="text" id="editPhone" placeholder="Phone" required />
+      <input type="email" id="editEmail" placeholder="Email" />
+      <input type="text" id="editAddress" placeholder="Address" />
+      <textarea id="editNotes" placeholder="Notes"></textarea>
+      <div id="editError" class="error-message"></div>
+      <button type="submit">Update</button>
+      <button type="button" id="deleteCשׂontactBtn">Delete Contact</button>
+      <button type="button" id="closeEditPopup">Cancel</button>
+    </form>
+  </div>
+<!-- Success Message Popup -->
+<div id="successPopup" class="popup-overlay">
+  <div class="popup-content">
+    <span class="close-btn" id="closeSuccessPopup">&times;</span>
+    <p id="successMessageText">Contact added successfully!</p>
+  </div>
+</div>
+<!-- Contact Info Popup -->
+<div id="contactInfoPopup" class="popup-overlay dark-popup">
+  <div class="popup-content">
+    <span class="close-btn" id="closeContactInfoPopup">&times;</span>
+    <p id="contactInfoText"></p>
+  </div>
+</div>
+<!-- Custom Confirmation Popup -->
+<div id="confirmPopup" class="popup">
+  <div class="popup-content">
+    <p id="confirmMessage">Are you sure?</p>
+    <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+      <button id="confirmYes">Yes</button>
+      <button id="confirmNo">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="deleteConfirmPopup" class="popup" style="display: none;">
+  <div class="popup-content">
+    <span id="deleteConfirmText">Are you sure?</span><br><br>
+    <button id="confirmDeleteYes" class="btn red">Yes</button>
+    <button id="confirmDeleteNo" class="btn gray">Cancel</button>
+  </div>
+</div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

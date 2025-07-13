@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Phonebook</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <h1>Phonebook V1.0</h1>
+        <small>by Roman Soloveychyk</small>
+      </div>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="contacts" style="max-width: 500px; margin: auto;">
+  <h2 class="heading-button">Contact Us</h2>
+<form id="contactUsForm">
+  <input type="text" placeholder="Your Name" required />
+  <input type="email" placeholder="Your Email" required />
+  <textarea placeholder="Your Message" rows="5" required></textarea>
+  <button type="submit" class="actions-button">Send</button>
+</form>
+  <p id="messageSent" style="display:none; color: green;">Message sent successfully!</p>
+</div>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Roman Soloveychyk</p>
+  </footer>
+
+  <script>
+    document.getElementById("contactUsForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      document.getElementById("messageSent").style.display = "block";
+      this.reset();
+    });
+  </script>
+</body>
+</html>
