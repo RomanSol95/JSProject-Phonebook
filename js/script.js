@@ -166,7 +166,17 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('error').textContent = 'Name already exists.';
       return;
     }
+// מניעת כפילות בשם (אבל לא בודק את עצמו)
+if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
+  document.getElementById('error').textContent = 'Name already exists.';
+  return;
+}
 
+// מניעת כפילות במספר
+if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
+document.getElementById('error').textContent = 'Name already exists.';
+  return;
+}
     contacts.push({ name, phone, email, address, notes, favorite: false });
     document.getElementById('popup').style.display = 'none';
     document.getElementById("successMessageText").textContent = "✅ Contact added successfully!";
