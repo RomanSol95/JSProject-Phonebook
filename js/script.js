@@ -150,22 +150,39 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('popup').style.display = 'none';
   });
 
-  document.getElementById('contactForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const notes = document.getElementById('notes').value.trim();
+  document.getElementById('contactForm').addEventListener('submit', (e) => {
+  e.preventDefault();
 
-    if (!name || !phone) {
-      document.getElementById('error').textContent = 'Name and phone are required.';
-      return;
-    }
-    if (contacts.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-      document.getElementById('error').textContent = 'Name already exists.';
-      return;
-    }
+  const index = document.getElementById('contactForm').dataset.index;
+
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+
+  if (!name || !phone) {
+    document.getElementById('error').textContent = "Name and phone are required.";
+    return;
+  }
+
+  if (contacts.some((c, i) => i != index && c.name.toLowerCase() === name.toLowerCase())) {
+    document.getElementById('error').textContent = "Contact with this name already exists!";
+    return;
+  }
+
+  const newContact = { name, phone, email, address, notes };
+
+  if (index !== "null") {
+    contacts[index] = newContact;
+  } else {
+    contacts.push(newContact);
+  }
+
+  document.getElementById('popup').style.display = "none";
+  document.getElementById('successMessageText').textContent = "Saved successfully";
+  renderContacts();
+});
 
     contacts.push({ name, phone, email, address, notes, favorite: false });
     document.getElementById('popup').style.display = 'none';
