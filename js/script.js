@@ -28,75 +28,103 @@ let currentEditIndex = -1;
 let showOnlyFavorites = false;
 let pendingDeleteIndex = null;
 
-function renderContacts(filteredContacts = contacts) {
-  const contactList = document.getElementById('contactList');
-  contactList.innerHTML = '';
+function renderContacts(filterText = '') {
+  const list = document.getElementById('contact-list');
+  list.innerHTML = '';
+  const filtered = contacts
+    .filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()))
+    .filter(c => !showOnlyFavorites || c.favorite)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  filteredContacts.forEach((contact, index) => {
+  if (!filtered.length) {
+    list.innerHTML = '<li>No contacts found.</li>';
+    return;
+  }
+
+  filtered.forEach(contact => {
+    const idx = contacts.indexOf(contact);
     const li = document.createElement('li');
-    li.className = 'contact-item';
+    li.dataset.index = idx;
 
-    const details = document.createElement('div');
-    details.className = 'contact-details';
-    details.innerHTML = `<strong>${contact.name}</strong><br>${contact.phone}<br>${contact.email || ''}<br>${contact.address || ''}<br>${contact.notes || ''}`;
-
-    const actions = document.createElement('div');
-    actions.className = 'contact-actions';
+    const star = document.createElement('span');
+    star.textContent = contact.favorite ? '⭐' : '☆';
+    star.className = 'star-icon';
+    star.title = 'Toggle favorite';
+    star.addEventListener('click', e => {
+      e.stopPropagation();
+      contact.favorite = !contact.favorite;
+      renderContacts(filterText);
+    });
 
     const editBtn = document.createElement('button');
-    editBtn.textContent = 'Edit';
-    editBtn.onclick = () => editContact(index);
+    editBtn.textContent = '✏️';
+    editBtn.className = 'small-btn';
+    editBtn.title = 'Edit contact';
+    editBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openEditForm(idx);
+    });
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.onclick = () => deleteContact(index);
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '🗑️';
+    delBtn.className = 'small-btn';
+    delBtn.title = 'Delete contact';
+    delBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      pendingDeleteIndex = idx;
+      document.getElementById('deleteConfirmText').textContent = `Delete ${contact.name}?`;
+      document.getElementById('deleteConfirmPopup').style.display = 'flex';
+    });
 
-    const favBtn = document.createElement('button');
-    favBtn.innerHTML = contact.favorite ? '★' : '☆';
-    favBtn.className = 'favorite';
-    favBtn.onclick = () => toggleFavorite(index);
+    li.append(star, ` ${contact.name} - ${contact.phone} `, editBtn, delBtn);
 
-    actions.appendChild(editBtn);
-    actions.appendChild(deleteBtn);
-    actions.appendChild(favBtn);
+    li.addEventListener('click', () => {
+      const infoText = document.getElementById("contactInfoText");
+      const infoPopup = document.getElementById("contactInfoPopup");
+      infoText.innerHTML = `
+        <span style="font-size: 1.6rem; font-weight: bold; 
+        background: linear-gradient(90deg, rgb(113, 196, 255), rgb(255, 255, 255))
+        ; -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;">
+          ${contact.name}
+        </span><br>
+        <span style="color: white;">
+          📞 Phone Number: ${contact.phone}<br>
+          ✉️ E-Mail: ${contact.email || 'N/A'}<br>
+          📍 Location: ${contact.address || 'N/A'}<br>
+          📝 Notes: ${contact.notes || 'N/A'}
+        </span>
+      `;
+      infoPopup.style.display = "flex";
+    });
 
-    li.appendChild(details);
-    li.appendChild(actions);
-    contactList.appendChild(li);
+    list.appendChild(li);
   });
 }
 
-function editContact(index) {
+document.getElementById('confirmDeleteYes').addEventListener('click', () => {
+  if (pendingDeleteIndex !== null) {
+    contacts.splice(pendingDeleteIndex, 1);
+    renderContacts(document.getElementById('searchInput').value);
+    pendingDeleteIndex = null;
+    document.getElementById('deleteConfirmPopup').style.display = 'none';
+  }
+});
+
+document.getElementById('confirmDeleteNo').addEventListener('click', () => {
+  pendingDeleteIndex = null;
+  document.getElementById('deleteConfirmPopup').style.display = 'none';
+});
+
+
+function openEditForm(index) {
   currentEditIndex = index;
-  const contact = contacts[index];
-  document.getElementById('editName').value = contact.name;
-  document.getElementById('editPhone').value = contact.phone;
-  document.getElementById('editEmail').value = contact.email;
-  document.getElementById('editAddress').value = contact.address;
-  document.getElementById('editNotes').value = contact.notes;
-  document.getElementById('editError').textContent = '';
+  const c = contacts[index];
+  document.getElementById('editName').value = c.name;
+  document.getElementById('editPhone').value = c.phone;
+  document.getElementById('editEmail').value = c.email || '';
+  document.getElementById('editAddress').value = c.address || '';
+  document.getElementById('editNotes').value = c.notes || '';
   document.getElementById('editPopup').style.display = 'flex';
-}
-
-function deleteContact(index) {
-  contacts.splice(index, 1);
-  renderContacts();
-}
-
-function toggleFavorite(index) {
-  contacts[index].favorite = !contacts[index].favorite;
-  renderContacts();
-}
-
-function filterContacts(query) {
-  const lowerQuery = query.toLowerCase();
-  return contacts.filter(c =>
-    c.name.toLowerCase().includes(lowerQuery) ||
-    c.phone.includes(query) ||
-    (c.email && c.email.toLowerCase().includes(lowerQuery)) ||
-    (c.address && c.address.toLowerCase().includes(lowerQuery)) ||
-    (c.notes && c.notes.toLowerCase().includes(lowerQuery))
-  );
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -116,15 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('contactForm').reset();
     document.getElementById('popup').style.display = 'flex';
     document.getElementById('error').textContent = '';
-    currentEditIndex = -1;
   });
 
   document.getElementById('closePopup').addEventListener('click', () => {
     document.getElementById('popup').style.display = 'none';
-  });
-
-  document.getElementById('closeEditPopup').addEventListener('click', () => {
-    document.getElementById('editPopup').style.display = 'none';
   });
 
   document.getElementById('contactForm').addEventListener('submit', e => {
@@ -134,74 +157,120 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = document.getElementById('email').value.trim();
     const address = document.getElementById('address').value.trim();
     const notes = document.getElementById('notes').value.trim();
-    const errorElem = document.getElementById('error');
-    errorElem.textContent = '';
 
-    if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
-      errorElem.textContent = 'Name already exists.';
+    if (!name || !phone) {
+      document.getElementById('error').textContent = 'Name and phone are required.';
       return;
     }
-
-    if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
-      errorElem.textContent = 'Phone number already exists.';
+    if (contacts.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+      document.getElementById('error').textContent = 'Name already exists.';
       return;
     }
+// מניעת כפילות בשם (אבל לא בודק את עצמו)
+if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
+  document.getElementById('error').textContent = 'Name already exists.';
+  return;
+}
 
-    if (currentEditIndex !== -1) {
-      contacts[currentEditIndex] = { name, phone, email, address, notes, favorite: contacts[currentEditIndex].favorite };
-      currentEditIndex = -1;
-      document.getElementById("successMessageText").textContent = "✔️ Contact updated successfully!";
-    } else {
-      contacts.push({ name, phone, email, address, notes, favorite: false });
-      document.getElementById("successMessageText").textContent = "✔️ Contact added successfully!";
-    }
-
+// מניעת כפילות במספר
+if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
+document.getElementById('error').textContent = 'Name already exists.';
+  return;
+}
+    contacts.push({ name, phone, email, address, notes, favorite: false });
     document.getElementById('popup').style.display = 'none';
+    document.getElementById("successMessageText").textContent = "✅ Contact added successfully!";
     document.getElementById("successPopup").style.display = "flex";
-    renderContacts();
+    renderContacts(document.getElementById('searchInput').value);
   });
 
-  document.getElementById('editContactForm').addEventListener('submit', function(e) {
+  document.getElementById('editContactForm').addEventListener('submit', e => {
     e.preventDefault();
-
     const name = document.getElementById('editName').value.trim();
     const phone = document.getElementById('editPhone').value.trim();
     const email = document.getElementById('editEmail').value.trim();
     const address = document.getElementById('editAddress').value.trim();
     const notes = document.getElementById('editNotes').value.trim();
-    const errorElem = document.getElementById('editError');
-    errorElem.textContent = '';
 
-    if (contacts.some((c, i) => i !== currentEditIndex && c.name === name)) {
-      errorElem.textContent = 'Name already exists for another contact';
-      return;
-    }
+    if (!name || !phone) return;
 
-    if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
-      errorElem.textContent = 'Phone number already exists for another contact';
-      return;
-    }
+    contacts[currentEditIndex] = { ...contacts[currentEditIndex], name, phone, email, address, notes };
+    document.getElementById('editPopup').style.display = 'none';
+    renderContacts(document.getElementById('searchInput').value);
+  });
 
-    contacts[currentEditIndex] = {
-      ...contacts[currentEditIndex],
-      name,
-      phone,
-      email,
-      address,
-      notes
-    };
-
+  document.getElementById('closeEditPopup').addEventListener('click', () => {
     document.getElementById('editPopup').style.display = 'none';
     currentEditIndex = -1;
-    renderContacts();
   });
 
-  document.getElementById("successCloseBtn").addEventListener("click", () => {
-    document.getElementById("successPopup").style.display = "none";
-  });
+  document.getElementById('deleteAllBtn').addEventListener('click', () => {
+  if (contacts.length === 0) return;
+  document.getElementById('confirmMessage').textContent = 'Delete ALL contacts?';
+  document.getElementById('confirmPopup').style.display = 'flex';
+
+  const yesBtn = document.getElementById('confirmYes');
+  const noBtn = document.getElementById('confirmNo');
+
+  yesBtn.onclick = () => {
+    contacts.length = 0;
+    renderContacts();
+    document.getElementById('confirmPopup').style.display = 'none';
+  };
+
+  noBtn.onclick = () => {
+    document.getElementById('confirmPopup').style.display = 'none';
+  };
+});
+
 
   document.getElementById('searchInput').addEventListener('input', e => {
-    const query = e.target.value.trim();
-    renderContacts(filterContacts(query));
+    renderContacts(e.target.value);
   });
+
+  document.getElementById('toggleFavoritesBtn')?.addEventListener('click', () => {
+    showOnlyFavorites = !showOnlyFavorites;
+    document.getElementById('toggleFavoritesBtn').textContent = showOnlyFavorites ? 'Show All Contacts' : 'Show Only Favorites';
+    renderContacts(document.getElementById('searchInput').value);
+  });
+
+  document.getElementById('closeContactInfoPopup').addEventListener('click', () => {
+    document.getElementById('contactInfoPopup').style.display = 'none';
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      const popup = document.getElementById('contactInfoPopup');
+      if (popup.style.display === 'flex') {
+        popup.style.display = 'none';
+      }
+    }
+  });
+
+  document.getElementById('contactInfoPopup').addEventListener('click', function (e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+    }
+  });
+});
+ // כפתור סגירה X בפופאפ הצלחה
+document.getElementById('closeSuccessPopup').addEventListener('click', () => {
+  document.getElementById('successPopup').style.display = 'none';
+});
+
+// סגירה בלחיצה מחוץ לפופאפ
+document.getElementById('successPopup').addEventListener('click', function (e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+});
+
+// סגירה בלחיצה על ESC
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    const popup = document.getElementById('successPopup');
+    if (popup.style.display === 'flex') {
+      popup.style.display = 'none';
+    }
+  }
 });
