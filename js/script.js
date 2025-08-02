@@ -182,19 +182,30 @@ document.getElementById('popup').style.display = 'none';
 document.getElementById("successPopup").style.display = "flex";
 
   document.getElementById('editContactForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('editName').value.trim();
-    const phone = document.getElementById('editPhone').value.trim();
-    const email = document.getElementById('editEmail').value.trim();
-    const address = document.getElementById('editAddress').value.trim();
-    const notes = document.getElementById('editNotes').value.trim();
+  e.preventDefault();
+  const name = document.getElementById('editName').value.trim();
+  const phone = document.getElementById('editPhone').value.trim();
+  const email = document.getElementById('editEmail').value.trim();
+  const address = document.getElementById('editAddress').value.trim();
+  const notes = document.getElementById('editNotes').value.trim();
 
-    if (!name || !phone) return;
+  const errorElem = document.getElementById('editError');
+  errorElem.textContent = '';
 
-    contacts[currentEditIndex] = { ...contacts[currentEditIndex], name, phone, email, address, notes };
-    document.getElementById('editPopup').style.display = 'none';
-    renderContacts(document.getElementById('searchInput').value);
-  });
+  if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
+    errorElem.textContent = 'Name already exists for another contact.';
+    return;
+  }
+
+  if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
+    errorElem.textContent = 'Phone number already exists for another contact.';
+    return;
+  }
+
+  contacts[currentEditIndex] = { ...contacts[currentEditIndex], name, phone, email, address, notes };
+  document.getElementById('editPopup').style.display = 'none';
+  renderContacts(document.getElementById('searchInput').value);
+});
 
   document.getElementById('closeEditPopup').addEventListener('click', () => {
     document.getElementById('editPopup').style.display = 'none';
