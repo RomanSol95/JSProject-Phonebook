@@ -158,31 +158,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const address = document.getElementById('address').value.trim();
     const notes = document.getElementById('notes').value.trim();
 
-    if (!name || !phone) {
-      document.getElementById('error').textContent = 'Name and phone are required.';
-      return;
-    }
-    if (contacts.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-      document.getElementById('error').textContent = 'Name already exists.';
-      return;
-    }
-// מניעת כפילות בשם (אבל לא בודק את עצמו)
-if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
+   if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
   document.getElementById('error').textContent = 'Name already exists.';
   return;
 }
 
-// מניעת כפילות במספר
 if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
-document.getElementById('error').textContent = 'Name already exists.';
+  document.getElementById('error').textContent = 'Phone number already exists.';
   return;
 }
-    contacts.push({ name, phone, email, address, notes, favorite: false });
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById("successMessageText").textContent = "✅ Contact added successfully!";
-    document.getElementById("successPopup").style.display = "flex";
-    renderContacts(document.getElementById('searchInput').value);
-  });
+
+// עדכון או הוספה
+if (currentEditIndex !== null) {
+  contacts[currentEditIndex] = { name, phone, email, address, notes, favorite: contacts[currentEditIndex].favorite };
+  currentEditIndex = null;
+  document.getElementById("successMessageText").textContent = "✔️ Contact updated successfully!";
+} else {
+  contacts.push({ name, phone, email, address, notes, favorite: false });
+  document.getElementById("successMessageText").textContent = "✔️ Contact added successfully!";
+}
+
+document.getElementById('popup').style.display = 'none';
+document.getElementById("successPopup").style.display = "flex";
 
   document.getElementById('editContactForm').addEventListener('submit', e => {
     e.preventDefault();
