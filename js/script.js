@@ -28,88 +28,75 @@ let currentEditIndex = -1;
 let showOnlyFavorites = false;
 let pendingDeleteIndex = null;
 
-function renderContacts(filterText = '') {
-  const list = document.getElementById('contact-list');
-  list.innerHTML = '';
-  const filtered = contacts
-    .filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()))
-    .filter(c => !showOnlyFavorites || c.favorite)
-    .sort((a, b) => a.name.localeCompare(b.name));
+function renderContacts(filteredContacts = contacts) {
+  const contactList = document.getElementById('contactList');
+  contactList.innerHTML = '';
 
-  if (!filtered.length) {
-    list.innerHTML = '<li>No contacts found.</li>';
-    return;
-  }
-
-  filtered.forEach(contact => {
-    const idx = contacts.indexOf(contact);
+  filteredContacts.forEach((contact, index) => {
     const li = document.createElement('li');
-    li.dataset.index = idx;
+    li.className = 'contact-item';
 
-    const star = document.createElement('span');
-    star.textContent = contact.favorite ? '⭐' : '☆';
-    star.className = 'star-icon';
-    star.title = 'Toggle favorite';
-    star.addEventListener('click', e => {
-      e.stopPropagation();
-      contact.favorite = !contact.favorite;
-      renderContacts(filterText);
-    });
+    const details = document.createElement('div');
+    details.className = 'contact-details';
+    details.innerHTML = `<strong>${contact.name}</strong><br>${contact.phone}<br>${contact.email || ''}<br>${contact.address || ''}<br>${contact.notes || ''}`;
+
+    const actions = document.createElement('div');
+    actions.className = 'contact-actions';
 
     const editBtn = document.createElement('button');
-    editBtn.textContent = '✏️';
-    editBtn.className = 'small-btn';
-    editBtn.title = 'Edit contact';
-    editBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openEditForm(idx);
-    });
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => editContact(index);
 
-    const delBtn = document.createElement('button');
-    delBtn.textContent = '🗑️';
-    delBtn.className = 'small-btn';
-    delBtn.title = 'Delete contact';
-    delBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      pendingDeleteIndex = idx;
-      document.getElementById('deleteConfirmText').textContent = `Delete ${contact.name}?`;
-      document.getElementById('deleteConfirmPopup').style.display = 'flex';
-    });
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = () => deleteContact(index);
 
-    li.append(star, ` ${contact.name} - ${contact.phone} `, editBtn, delBtn);
+    const favBtn = document.createElement('button');
+    favBtn.innerHTML = contact.favorite ? '★' : '☆';
+    favBtn.className = 'favorite';
+    favBtn.onclick = () => toggleFavorite(index);
 
-    li.addEventListener('click', () => {
-      const infoText = document.getElementById("contactInfoText");
-      const infoPopup = document.getElementById("contactInfoPopup");
-      infoText.innerHTML = `
-        <span style="font-size: 1.6rem; font-weight: bold; 
-        background: linear-gradient(90deg, rgb(113, 196, 255), rgb(255, 255, 255));
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;">
-          ${contact.name}
-        </span><br>
-        <span style="color: white;">
-          📞 Phone Number: ${contact.phone}<br>
-          ✉️ E-Mail: ${contact.email || 'N/A'}<br>
-          📍 Location: ${contact.address || 'N/A'}<br>
-          📝 Notes: ${contact.notes || 'N/A'}
-        </span>
-      `;
-      infoPopup.style.display = "flex";
-    });
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+    actions.appendChild(favBtn);
 
-    list.appendChild(li);
+    li.appendChild(details);
+    li.appendChild(actions);
+    contactList.appendChild(li);
   });
 }
 
-function openEditForm(index) {
+function editContact(index) {
   currentEditIndex = index;
-  const c = contacts[index];
-  document.getElementById('editName').value = c.name;
-  document.getElementById('editPhone').value = c.phone;
-  document.getElementById('editEmail').value = c.email || '';
-  document.getElementById('editAddress').value = c.address || '';
-  document.getElementById('editNotes').value = c.notes || '';
+  const contact = contacts[index];
+  document.getElementById('editName').value = contact.name;
+  document.getElementById('editPhone').value = contact.phone;
+  document.getElementById('editEmail').value = contact.email;
+  document.getElementById('editAddress').value = contact.address;
+  document.getElementById('editNotes').value = contact.notes;
+  document.getElementById('editError').textContent = '';
   document.getElementById('editPopup').style.display = 'flex';
+}
+
+function deleteContact(index) {
+  contacts.splice(index, 1);
+  renderContacts();
+}
+
+function toggleFavorite(index) {
+  contacts[index].favorite = !contacts[index].favorite;
+  renderContacts();
+}
+
+function filterContacts(query) {
+  const lowerQuery = query.toLowerCase();
+  return contacts.filter(c =>
+    c.name.toLowerCase().includes(lowerQuery) ||
+    c.phone.includes(query) ||
+    (c.email && c.email.toLowerCase().includes(lowerQuery)) ||
+    (c.address && c.address.toLowerCase().includes(lowerQuery)) ||
+    (c.notes && c.notes.toLowerCase().includes(lowerQuery))
+  );
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -138,142 +125,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('closeEditPopup').addEventListener('click', () => {
     document.getElementById('editPopup').style.display = 'none';
-    currentEditIndex = -1;
   });
 
-  document.getElementById('confirmDeleteYes').addEventListener('click', () => {
-    if (pendingDeleteIndex !== null) {
-      contacts.splice(pendingDeleteIndex, 1);
-      renderContacts(document.getElementById('searchInput').value);
-      pendingDeleteIndex = null;
-      document.getElementById('deleteConfirmPopup').style.display = 'none';
+  document.getElementById('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const notes = document.getElementById('notes').value.trim();
+    const errorElem = document.getElementById('error');
+    errorElem.textContent = '';
+
+    if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
+      errorElem.textContent = 'Name already exists.';
+      return;
     }
+
+    if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
+      errorElem.textContent = 'Phone number already exists.';
+      return;
+    }
+
+    if (currentEditIndex !== -1) {
+      contacts[currentEditIndex] = { name, phone, email, address, notes, favorite: contacts[currentEditIndex].favorite };
+      currentEditIndex = -1;
+      document.getElementById("successMessageText").textContent = "✔️ Contact updated successfully!";
+    } else {
+      contacts.push({ name, phone, email, address, notes, favorite: false });
+      document.getElementById("successMessageText").textContent = "✔️ Contact added successfully!";
+    }
+
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById("successPopup").style.display = "flex";
+    renderContacts();
   });
 
-  document.getElementById('confirmDeleteNo').addEventListener('click', () => {
-    pendingDeleteIndex = null;
-    document.getElementById('deleteConfirmPopup').style.display = 'none';
+  document.getElementById('editContactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
+    const address = document.getElementById('editAddress').value.trim();
+    const notes = document.getElementById('editNotes').value.trim();
+    const errorElem = document.getElementById('editError');
+    errorElem.textContent = '';
+
+    if (contacts.some((c, i) => i !== currentEditIndex && c.name === name)) {
+      errorElem.textContent = 'Name already exists for another contact';
+      return;
+    }
+
+    if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
+      errorElem.textContent = 'Phone number already exists for another contact';
+      return;
+    }
+
+    contacts[currentEditIndex] = {
+      ...contacts[currentEditIndex],
+      name,
+      phone,
+      email,
+      address,
+      notes
+    };
+
+    document.getElementById('editPopup').style.display = 'none';
+    currentEditIndex = -1;
+    renderContacts();
   });
 
-  document.getElementById('deleteAllBtn').addEventListener('click', () => {
-    if (contacts.length === 0) return;
-    document.getElementById('confirmMessage').textContent = 'Delete ALL contacts?';
-    document.getElementById('confirmPopup').style.display = 'flex';
-
-    document.getElementById('confirmYes').onclick = () => {
-      contacts.length = 0;
-      renderContacts();
-      document.getElementById('confirmPopup').style.display = 'none';
-    };
-
-    document.getElementById('confirmNo').onclick = () => {
-      document.getElementById('confirmPopup').style.display = 'none';
-    };
+  document.getElementById("successCloseBtn").addEventListener("click", () => {
+    document.getElementById("successPopup").style.display = "none";
   });
 
   document.getElementById('searchInput').addEventListener('input', e => {
-    renderContacts(e.target.value);
+    const query = e.target.value.trim();
+    renderContacts(filterContacts(query));
   });
-
-  document.getElementById('toggleFavoritesBtn')?.addEventListener('click', () => {
-    showOnlyFavorites = !showOnlyFavorites;
-    document.getElementById('toggleFavoritesBtn').textContent =
-      showOnlyFavorites ? 'Show All Contacts' : 'Show Only Favorites';
-    renderContacts(document.getElementById('searchInput').value);
-  });
-
-  document.getElementById('closeContactInfoPopup').addEventListener('click', () => {
-    document.getElementById('contactInfoPopup').style.display = 'none';
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.popup').forEach(p => {
-        if (p.style.display === 'flex') p.style.display = 'none';
-      });
-    }
-  });
-
-  document.getElementById('contactInfoPopup').addEventListener('click', function (e) {
-    if (e.target === this) this.style.display = 'none';
-  });
-});
-
-// טופס הוספה
-document.getElementById('contactForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const address = document.getElementById('address').value.trim();
-  const notes = document.getElementById('notes').value.trim();
-
-  if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
-    document.getElementById('error').textContent = 'Name already exists.';
-    return;
-  }
-
-  if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
-    document.getElementById('error').textContent = 'Phone number already exists.';
-    return;
-  }
-
-  if (currentEditIndex !== -1) {
-    contacts[currentEditIndex] = { name, phone, email, address, notes, favorite: contacts[currentEditIndex].favorite };
-    currentEditIndex = -1;
-    document.getElementById("successMessageText").textContent = "✔️ Contact updated successfully!";
-  } else {
-    contacts.push({ name, phone, email, address, notes, favorite: false });
-    document.getElementById("successMessageText").textContent = "✔️ Contact added successfully!";
-  }
-
-  document.getElementById('popup').style.display = 'none';
-  document.getElementById("successPopup").style.display = "flex";
-  renderContacts();
-});
-
-// טופס עריכה
-document.getElementById('editContactForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const name = document.getElementById('editName').value.trim();
-  const phone = document.getElementById('editPhone').value.trim();
-  const email = document.getElementById('editEmail').value.trim();
-  const address = document.getElementById('editAddress').value.trim();
-  const notes = document.getElementById('editNotes').value.trim();
-  const errorElem = document.getElementById('editError');
-  errorElem.textContent = '';
-
-  if (contacts.some((c, i) => i !== currentEditIndex && c.name === name)) {
-    errorElem.textContent = 'Name already exists for another contact';
-    return;
-  }
-
-  if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
-    errorElem.textContent = 'Phone number already exists for another contact';
-    return;
-  }
-
-  contacts[currentEditIndex] = {
-    ...contacts[currentEditIndex],
-    name,
-    phone,
-    email,
-    address,
-    notes
-  };
-
-  currentEditIndex = -1;
-  document.getElementById('editPopup').style.display = 'none';
-  renderContacts();
-});
-
-// סגירת פופאפ הצלחה
-document.getElementById('closeSuccessPopup').addEventListener('click', () => {
-  document.getElementById('successPopup').style.display = 'none';
-});
-
-document.getElementById('successPopup').addEventListener('click', function (e) {
-  if (e.target === this) {
-    this.style.display = 'none';
-  }
 });
