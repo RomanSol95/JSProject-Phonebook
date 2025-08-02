@@ -181,30 +181,41 @@ if (currentEditIndex !== null) {
 document.getElementById('popup').style.display = 'none';
 document.getElementById("successPopup").style.display = "flex";
 
-  document.getElementById('editContactForm').addEventListener('submit', e => {
+  document.getElementById('editContactForm').addEventListener('submit', function(e) {
   e.preventDefault();
+
   const name = document.getElementById('editName').value.trim();
   const phone = document.getElementById('editPhone').value.trim();
   const email = document.getElementById('editEmail').value.trim();
   const address = document.getElementById('editAddress').value.trim();
   const notes = document.getElementById('editNotes').value.trim();
-
   const errorElem = document.getElementById('editError');
   errorElem.textContent = '';
 
-  if (contacts.some((c, i) => i !== currentEditIndex && c.name.toLowerCase() === name.toLowerCase())) {
-    errorElem.textContent = 'Name already exists for another contact.';
+  // בדיקה אם קיים שם זהה אצל מישהו אחר
+  if (contacts.some((c, i) => i !== currentEditIndex && c.name === name)) {
+    errorElem.textContent = 'Name already exists for another contact';
     return;
   }
 
+  // בדיקה אם קיים טלפון זהה אצל מישהו אחר
   if (contacts.some((c, i) => i !== currentEditIndex && c.phone === phone)) {
-    errorElem.textContent = 'Phone number already exists for another contact.';
+    errorElem.textContent = 'Phone number already exists for another contact';
     return;
   }
 
-  contacts[currentEditIndex] = { ...contacts[currentEditIndex], name, phone, email, address, notes };
+  // עדכון הקשר הקיים
+  contacts[currentEditIndex] = {
+    ...contacts[currentEditIndex],
+    name,
+    phone,
+    email,
+    address,
+    notes
+  };
+
   document.getElementById('editPopup').style.display = 'none';
-  renderContacts(document.getElementById('searchInput').value);
+  renderContacts(); // נניח שיש לך פונקציה כזו שמרנדרת מחדש
 });
 
   document.getElementById('closeEditPopup').addEventListener('click', () => {
